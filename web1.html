@@ -1,0 +1,50 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+<meta charset="UTF-8"> 
+<meta http-equiv="X-UA-Compatible" content="IE=edge"> 
+<meta name="viewport" content="width=device-width, initial-scale=1"> 
+<!-- title of the page --> 
+<title>image_classification</title> 
+<!-- load processing library--> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.dom.min.js"></script> 
+<!-- load ml5.js --> 
+<script src="https://unpkg.com/ml5@0.1.1/dist/ml5.min.js"></script> 
+<!-- load index.js --> 
+<script>
+let mobilenet; 
+let video; let label = ''; 
+// when model is ready make predictions 
+function modelReady() { 
+	console.log('Model is ready!!!'); 
+	mobilenet.predict(gotResults); 
+	} 
+function gotResults(error, results) { 
+	if (error) { console.error(error); 
+	} else { 
+	label = results[0].className; 
+	// loop the inference by calling itself 
+	mobilenet.predict(gotResults); 
+	} 
+} 
+// setup function 
+function setup() { 
+	createCanvas(640, 550); // ml5 to create video capture 
+	video = createCapture(VIDEO); 
+	video.hide(); 
+	background(0); // load the MobileNet and apply it on video feed 
+	mobilenet = ml5.imageClassifier('MobileNet', video, modelReady); 
+} 
+function draw() { 
+	background(0); // show video 
+	image(video, 0, 0); 
+	fill(255); 
+	textSize(32); // show prediction label 
+	text(label, 10, height - 20); 
+}
+</script> 
+</head> <body> <!-- this is where the video will be shown --> 
+<video id="video"></video> 
+</body> 
+</html>
